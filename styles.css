@@ -1,3 +1,99 @@
 /*
-A CSS stylesheet for the etch-a-sketch webpage
+A CSS stylesheet for the etch-a-sketch webpage.
 */
+
+/*
+Webpage body is split into 3 parts: header, content, footer.
+All three employ flexbox displays to control their constituents.
+*/
+
+.header,
+.content,
+.footer {
+    display: flex;
+    align-items: center;
+
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
+     Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+    padding: 24px;
+}
+
+.header, 
+.footer {
+    background-color: #bde0fe;
+}
+
+.header {
+    justify-content: space-between;
+}
+
+.content,
+.footer {
+    justify-content: center;
+}
+
+.content {
+    background-color: rgb(230, 230, 230);
+}
+
+.banner-title {
+    /* Need a cool font. */
+    font-size: 32px;
+    font-weight: 800;
+}
+
+.banner-content {
+    /* Same ont as above */
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.canvas-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: start;
+}
+
+.canvas-title {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.canvas {
+    min-width: 400px;
+    max-width: 400px;
+
+    min-height: 400px;
+    max-height: 400px;
+
+    display: flex;
+
+    border: 3px solid black;
+}
+
+.canvas-row {
+    display: flex;
+    justify-content: space-evenly;
+
+    flex: 1;
+
+    border: 1px dashed red;
+}
+
+.canvas-element {
+    background-color: cornflowerblue;
+    border: 1px solid orange;
+    flex: 1;
+}
+
+.canvas-container {
+    display: flex;
+    flex-direction: column;
+
+    /* This works well for consuming all space in the container */
+    flex: 1;
+
+    border: 4px dashed green;
+}
