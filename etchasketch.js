@@ -46,5 +46,5 @@ function insertCanvasGrid(newGrid) {
 }
 
 addEventListener('DOMContentLoaded', function () {
-    insertCanvasGrid(buildCanvasGrid(16));
+    insertCanvasGrid(buildCanvasGrid(32));
 });
