@@ -119,6 +119,8 @@ addEventListener('DOMContentLoaded', function () {
 
     const rainbowButton = document.querySelector("#option2");
 
+    const gradientButton = document.querySelector("#myCheckbox");
+
     const defaultCanvasTitle = "CANVAS ";
     const defaultSize = 16;
 
@@ -158,15 +160,23 @@ addEventListener('DOMContentLoaded', function () {
             // Get the target element
             let targetElement = e.target;
 
-            // Check the element is indeed a div to be coloured.
+            // Get the classes in the selected element
             let targetElementClasses = targetElement.classList;
+
+            // Is the element a square to be coloured?
             if (targetElementClasses.contains("canvas-element")) {
+                // Clear out existing classes
                 targetElement.className = '';
 
+                // What colour scheme does the user want?
                 if (rainbowButton.checked) {
                     let newRGB = generateRandomRGBValue();
                     let newStyle = getNewBackgroundStyleContent(newRGB);
+
+                    // Add inline style to the selected element
                     targetElement.setAttribute("style", newStyle);
+
+                    // Add basic class, to maintain flexbox rules
                     targetElement.classList.add("canvas-element-blank");
                 } else {
                     targetElement.classList.add("canvas-element-black");
