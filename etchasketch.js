@@ -63,7 +63,6 @@ function updateTitleContent(object, string) {
 
 addEventListener('DOMContentLoaded', function () {
 
-    
     // Constant elements defined and stored in variables.
     const updateButton = document.querySelector('.edge-length-button');
     const updateContent = document.querySelector('.edge-length');
@@ -73,6 +72,8 @@ addEventListener('DOMContentLoaded', function () {
 
     const defaultCanvasTitle = "CANVAS ";
     const defaultSize = 16;
+
+    let mouseDown = false;
 
     // Build the initial canvas. Can't attach an event listener to this,
     // because it is always re-built? Check that.
@@ -89,20 +90,32 @@ addEventListener('DOMContentLoaded', function () {
         }
         updateContent.value = '';
         updateContent.focus();
-    })
+    });
+
+    // Switch the status of boolean variable.
+    canvasBlock.addEventListener('mousedown', function() {
+        mouseDown = true;
+    });
+
+    // Switch the status of boolean variable.
+    canvasBlock.addEventListener('mouseup', function() {
+        mouseDown = false;
+    });
 
     // Colour-change functionality added to the webpage.
-    canvasBlock.addEventListener('click', function(e) {
-        // I believe we need each individual div to have an indiv. id.
-        let targetElement = e.target;
+    canvasBlock.addEventListener('mousemove', function(e) {
+        if (mouseDown) {
+            // Get the target element
+            let targetElement = e.target;
 
-        // Check the element is indeed a div to be coloured.
-        let targetElementClasses = targetElement.classList;
-        if (targetElementClasses.contains("canvas-element")) {
-            targetElement.className = '';
-            targetElement.classList.add("canvas-element-black");
+            // Check the element is indeed a div to be coloured.
+            let targetElementClasses = targetElement.classList;
+            if (targetElementClasses.contains("canvas-element")) {
+                targetElement.className = '';
+                targetElement.classList.add("canvas-element-black");
+            }
         }
-    })
+    });
 
 
 });
