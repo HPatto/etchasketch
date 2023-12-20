@@ -154,6 +154,9 @@ addEventListener('DOMContentLoaded', function () {
         mouseDown = false;
     });
 
+    // Switch the status of the gradient boolean.
+    
+
     // Colour-change functionality added to the webpage.
     canvasBlock.addEventListener('mousemove', function(e) {
         if (mouseDown) {
@@ -164,6 +167,7 @@ addEventListener('DOMContentLoaded', function () {
             let targetElementClasses = targetElement.classList;
 
             // Is the element a square to be coloured?
+            // Once it has been coloured, it cannot be updated again.
             if (targetElementClasses.contains("canvas-element")) {
                 // Clear out existing classes
                 targetElement.className = '';
