@@ -125,3 +125,7 @@ All three employ flexbox displays to control their constituents.
 
     /* border: 4px dashed green; */
 }
+
+.edge-length-button {
+    font-weight: 400;
+}

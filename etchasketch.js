@@ -42,9 +42,45 @@ function buildCanvasRow(sideCount) {
 // Insert the canvas grid into the document
 function insertCanvasGrid(newGrid) {
     const canvasAnchor = document.querySelector(".canvas");
+
+    // Clear out the currently existing element.
+    while (canvasAnchor.firstChild) {
+        canvasAnchor.removeChild(canvasAnchor.firstChild);
+    }
+
+    // Append the update canvas.
     canvasAnchor.appendChild(newGrid);
 }
 
+function updateCanvasTitle(object, defaultString, edgeSize) {
+    let newString = defaultString + "(" + edgeSize + " x " + edgeSize + ")";
+    updateTitleContent(object, newString);
+}
+
+function updateTitleContent(object, string) {
+    object.textContent = string;
+}
+
 addEventListener('DOMContentLoaded', function () {
-    insertCanvasGrid(buildCanvasGrid(32));
+
+    let defaultSize = 16;
+    let defaultCanvasTitle = "CANVAS ";
+    insertCanvasGrid(buildCanvasGrid(defaultSize));
+
+    const updateButton = document.querySelector('.edge-length-button');
+    const updateContent = document.querySelector('.edge-length');
+    const canvasTitle = document.querySelector('.canvas-block > .canvas-title');
+
+    updateButton.addEventListener('click', function() {
+        let inputSize = parseInt(updateContent.value);
+
+        // If a valid fidelity, update the canvas.
+        if (inputSize >= 16 && inputSize <= 100) {
+            insertCanvasGrid(buildCanvasGrid(inputSize));
+            updateCanvasTitle(canvasTitle, defaultCanvasTitle, inputSize);
+        }
+        updateContent.value = '';
+        updateContent.focus();
+    })
+
 });
