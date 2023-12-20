@@ -94,18 +94,44 @@ function getRandomInt(value1, value2) {
 
 function generateRandomRGBValue() {
     // Format: "rgb(rValue, gValue, Bvalue)"
+    // Ensure full black values are not permitted.
 
-    let rValue = getRandomInt(0, 255);
-    let gValue = getRandomInt(0, 255);
-    let bValue = getRandomInt(0, 255);
+    let rValue;
+    let gValue;
+    let bValue;
+
+    let maxValue = 255; // RGb value representing "maximum" colour.
+
+    while (true) {
+        rValue = getRandomInt(0, maxValue);
+        gValue = getRandomInt(0, maxValue);
+        bValue = getRandomInt(0, maxValue);
+
+        // Check the found value is not RGB black.
+        if (!(rValue === maxValue &&
+            gValue === maxValue &&
+            bValue === maxValue)) {
+                break;
+            }
+    }
 
     let rgbString = `rgb(${rValue}, ${gValue}, ${bValue})`;
-
     return rgbString;
 }
 
 function getNewBackgroundStyleContent(rgbValue) {
     return `background-color: ${rgbValue}`;
+}
+
+function getStyleAttribute(object) {
+    let styleAttribute = object.getAttribute('style');
+}
+
+function squareMatchesInfillChoice(object, button) {
+    // The button either forces RGB black, or not.
+    // The object either has RGB black, or not.
+    // N.B. Rainbow cannot produce RGB black values.
+
 }
 
 addEventListener('DOMContentLoaded', function () {
@@ -154,14 +180,49 @@ addEventListener('DOMContentLoaded', function () {
         mouseDown = false;
     });
 
-    // Switch the status of the gradient boolean.
-    
-
-    // Colour-change functionality added to the webpage.
+    // Colour-change functionality.
     canvasBlock.addEventListener('mousemove', function(e) {
+        // If keyboard inputs are suitable.
         if (mouseDown) {
+            
             // Get the target element
             let targetElement = e.target;
+
+            /*
+            There are an array of conditions to check in order to paint to the viewport.
+            Some design decisions are made along the way.
+
+            1) Does the square have an assigned colour?
+            2) Does the user colour match the current infill colour choice (i.e., black or not)?
+            3) What is the current gradient strength of the square?
+            4) What is the gradient boolean?
+
+            These conditions, evaluated in this order, offer up certain rules for filling in colour.
+            As a result:
+
+            - Once a colour is assigned to a square, it's assigned for the "life" of the design.
+            - A gradient of 100% will fully colour in a square with the given colour.
+            - All colour will be applied thorugh style tags.
+
+            */
+
+            // What is the element's style attribute value?
+            let styleAttribute = getStyleAttribute(targetElement);
+
+            if(styleAttribute === "") {
+                // No colour has been set. Proceed with basic colour painting.
+            } else {
+                // Colour value already set in style tag.
+                // Compare rgb value to the user-infill style
+                
+                let matches = squareMatchesInfillChoice(targetElement, rainbowButton);
+
+
+
+            }
+
+
+
 
             // Get the classes in the selected element
             let targetElementClasses = targetElement.classList;
