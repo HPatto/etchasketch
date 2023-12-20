@@ -21,25 +21,31 @@
     </div>
     <div class="content">
         <div class="parameters">
-            <div class="canvas-title">
-                PARAMETERS
-            </div>
-            <div class="parameter-content">
-                <div class="fidelty">
-                    <input class="edge-length" placeholder="Edge length?"></input>
-                    <button class="edge-length-button">Update</button>
+            <div class="parameter-perimeter">
+                <div class="canvas-title">
+                    PARAMETERS
                 </div>
-                <div class="color-scheme">
-                    <div class="color-option">
-                        <input type="radio" id="option1" name="options" value="option1">
-                        <label for="option1">Black</label>
+                <div class="parameter-content">
+                    <div class="fidelty">
+                        <input class="edge-length" placeholder="Edge length?"></input>
+                        <button class="edge-length-button">Update</button>
                     </div>
-                    <div class="color-option">
-                        <input type="radio" id="option2" name="options" value="option2">
-                        <label for="option2">Rainbow</label>
+                    <div class="color-scheme">
+                        <div class="color-option">
+                            <input type="radio" id="option1" name="options" value="option1">
+                            <label for="option1">Black</label>
+                        </div>
+                        <div class="color-option">
+                            <input type="radio" id="option2" name="options" value="option2">
+                            <label for="option2">Rainbow</label>
+                        </div>
+    
+                        <!-- <div id="selectedIndicator"></div> -->
                     </div>
-
-                    <!-- <div id="selectedIndicator"></div> -->
+                    <div class="gradient">
+                        <input type="checkbox" id="myCheckbox" name="myCheckbox" value="checkBoxValue">
+                        <label for="myCheckbox">Gradient colours</label>
+                    </div>
                 </div>
             </div>
         </div>
@@ -57,12 +63,16 @@
             <ul>
                 <li>The minimum fidelty is 16 x 16</li>
                 <li>The maximum fidelty is 100 x 100</li>
+                <li>Click and drag the mouse to colour the squares</li>
+                <li>Refresh to reset the sketcher</li>
+                <li>Coloured squares cannot be overwritten</li>
+                <li>Re-sizing the canvas resets all squares</li>
             </ul>
         </div>
     </div>
     <div class="footer">
         <div class="banner-content">
-            IMAGES MAY NOT BE CREATED FOR NFT TOKENS (UNLESS YOU CUT ME SOME OWNERSHIP...)
+            IMAGES MAY NOT BE CREATED FOR NFT TOKENS (UNLESS YOU CUT ME SOME OWNERSHIP YOU DEGENERATES...)
         </div>
     </div>
     

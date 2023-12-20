@@ -127,6 +127,7 @@ addEventListener('DOMContentLoaded', function () {
     // Build the initial canvas. Can't attach an event listener to this,
     // because it is always re-built? Check that.
     insertCanvasGrid(buildCanvasGrid(defaultSize));
+    updateCanvasTitle(canvasTitle, defaultCanvasTitle, defaultSize);
 
     // Re-size functionality added to the webpage.
     updateButton.addEventListener('click', function() {
