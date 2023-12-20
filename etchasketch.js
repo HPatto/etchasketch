@@ -99,6 +99,7 @@ addEventListener('DOMContentLoaded', function () {
         // Check the element is indeed a div to be coloured.
         let targetElementClasses = targetElement.classList;
         if (targetElementClasses.contains("canvas-element")) {
+            targetElement.className = '';
             targetElement.classList.add("canvas-element-black");
         }
     })

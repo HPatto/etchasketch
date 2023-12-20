@@ -118,6 +118,8 @@ All three employ flexbox displays to control their constituents.
 
 .canvas-element-black {
     background-color: black;
+    border: 1px solid orange;
+    flex: 1;
 }
 
 .canvas-container {
