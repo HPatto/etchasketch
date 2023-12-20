@@ -116,6 +116,10 @@ All three employ flexbox displays to control their constituents.
     flex: 1;
 }
 
+.canvas-element-black {
+    background-color: black;
+}
+
 .canvas-container {
     display: flex;
     flex-direction: column;
