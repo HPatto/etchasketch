@@ -111,14 +111,18 @@ All three employ flexbox displays to control their constituents.
 }
 
 .canvas-element {
-    background-color: cornflowerblue;
-    border: 1px solid orange;
+    background-color: white;
+    /* border: 1px solid orange; */
     flex: 1;
 }
 
 .canvas-element-black {
     background-color: black;
-    border: 1px solid orange;
+    /* border: 1px solid orange; */
+    flex: 1;
+}
+
+.canvas-element-blank {
     flex: 1;
 }
 
@@ -134,4 +138,10 @@ All three employ flexbox displays to control their constituents.
 
 .edge-length-button {
     font-weight: 400;
+}
+
+.color-scheme {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid purple;
 }

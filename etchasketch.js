@@ -61,6 +61,53 @@ function updateTitleContent(object, string) {
     object.textContent = string;
 }
 
+function getRandomInt(value1, value2) {
+    /*
+    TAKEN FROM MY PREVIOUS PROJECT - ROCKPAPERSCISSORS
+    Return a random integer between the specified integer values (inclusive).
+
+    1) Get the random float.
+
+    2) Scale the float over the effective range of the function.
+    N.B., effective is the difference between the two arguments.
+
+    3) Add the random delta to the bottom value.
+    */
+
+    let bottom;
+    let top;
+
+    if (value1 < value2) {
+        bottom = value1;
+        top = value2;
+    } else {
+        bottom = value2;
+        top = value1;
+    }
+
+    delta = Math.abs(top - bottom) + 1; // +1 to ensure truncated vals may be the top int.
+    randomExcess = Math.floor(Math.random() * delta);
+
+    let randomInt = bottom + randomExcess;
+    return randomInt;
+}
+
+function generateRandomRGBValue() {
+    // Format: "rgb(rValue, gValue, Bvalue)"
+
+    let rValue = getRandomInt(0, 255);
+    let gValue = getRandomInt(0, 255);
+    let bValue = getRandomInt(0, 255);
+
+    let rgbString = `rgb(${rValue}, ${gValue}, ${bValue})`;
+
+    return rgbString;
+}
+
+function getNewBackgroundStyleContent(rgbValue) {
+    return `background-color: ${rgbValue}`;
+}
+
 addEventListener('DOMContentLoaded', function () {
 
     // Constant elements defined and stored in variables.
@@ -69,6 +116,8 @@ addEventListener('DOMContentLoaded', function () {
 
     const canvasTitle = document.querySelector('.canvas-block > .canvas-title');
     const canvasBlock = document.querySelector('.canvas');
+
+    const rainbowButton = document.querySelector("#option2");
 
     const defaultCanvasTitle = "CANVAS ";
     const defaultSize = 16;
@@ -92,12 +141,12 @@ addEventListener('DOMContentLoaded', function () {
         updateContent.focus();
     });
 
-    // Switch the status of boolean variable.
+    // Switch the status of drawing boolean.
     canvasBlock.addEventListener('mousedown', function() {
         mouseDown = true;
     });
 
-    // Switch the status of boolean variable.
+    // Switch the status of drawing boolean.
     canvasBlock.addEventListener('mouseup', function() {
         mouseDown = false;
     });
@@ -112,7 +161,15 @@ addEventListener('DOMContentLoaded', function () {
             let targetElementClasses = targetElement.classList;
             if (targetElementClasses.contains("canvas-element")) {
                 targetElement.className = '';
-                targetElement.classList.add("canvas-element-black");
+
+                if (rainbowButton.checked) {
+                    let newRGB = generateRandomRGBValue();
+                    let newStyle = getNewBackgroundStyleContent(newRGB);
+                    targetElement.setAttribute("style", newStyle);
+                    targetElement.classList.add("canvas-element-blank");
+                } else {
+                    targetElement.classList.add("canvas-element-black");
+                }
             }
         }
     });
