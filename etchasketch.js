@@ -3,22 +3,7 @@ A Javascript file, controlling the functionality and apperance
 of the etch-a-sketch webpage
 */
 
-// Build the canvas grid
-function buildCanvasGrid(sideCount) {
-    // Build a div container element
-    const divContainer = document.createElement('div');
-
-    // Give it a CSS property that has flexbox defined.
-    divContainer.classList.add("canvas-container");
-
-    for (let i = 0; i < sideCount; i++) {
-        let divRow = buildCanvasRow(sideCount);
-        divContainer.appendChild(divRow);
-    }
-
-    return divContainer;
-
-}
+/*##### CANVAS FUNCTIONS ##### */
 
 // Construct a row of the canvas grid
 function buildCanvasRow(sideCount) {
@@ -39,6 +24,23 @@ function buildCanvasRow(sideCount) {
 
 }
 
+// Build the canvas grid
+function buildCanvasGrid(sideCount) {
+    // Build a div container element
+    const divContainer = document.createElement('div');
+
+    // Give it a CSS property that has flexbox defined.
+    divContainer.classList.add("canvas-container");
+
+    for (let i = 0; i < sideCount; i++) {
+        let divRow = buildCanvasRow(sideCount);
+        divContainer.appendChild(divRow);
+    }
+
+    return divContainer;
+
+}
+
 // Insert the canvas grid into the document
 function insertCanvasGrid(newGrid) {
     const canvasAnchor = document.querySelector(".canvas");
@@ -52,15 +54,15 @@ function insertCanvasGrid(newGrid) {
     canvasAnchor.appendChild(newGrid);
 }
 
+// Dynamic updates to the canvas title
 function updateCanvasTitle(object, defaultString, edgeSize) {
     let newString = defaultString + "(" + edgeSize + " x " + edgeSize + ")";
-    updateTitleContent(object, newString);
+    object.textContent = newString;
 }
 
-function updateTitleContent(object, string) {
-    object.textContent = string;
-}
+/*##### RGB FUNCTIONS ##### */
 
+// Generate a random int in a given range.
 function getRandomInt(value1, value2) {
     /*
     TAKEN FROM MY PREVIOUS PROJECT - ROCKPAPERSCISSORS
@@ -92,10 +94,32 @@ function getRandomInt(value1, value2) {
     return randomInt;
 }
 
-function generateRandomRGBValue() {
-    // Format: "rgb(rValue, gValue, Bvalue)"
-    // Ensure full black values are not permitted.
+// Return specific RGB values
+function getSpecificRGBValues(colour) {
+    // Not sure about best practice. Colour strings are mapped to RGB arrays.
 
+    // black RGB values.
+    if (colour === 'black') {
+        return [255, 255, 255];
+    }
+
+    return false;
+}
+
+// Return an array of RGB values.
+function generateRandomRGBValue(colour=false) {
+    // Format: "rgb(rValue, gValue, Bvalue)"
+
+    // If specific colour is passed in, get the RGB values and return them.
+    if (colour) {
+        let values = specificRGBValues(colour);
+        if (!values) {
+            return values;
+        }
+    }
+    
+    // Ensure full black values are not permitted. Should be generalized.
+    // Define each RGB value.
     let rValue;
     let gValue;
     let bValue;
@@ -115,23 +139,37 @@ function generateRandomRGBValue() {
             }
     }
 
-    let rgbString = `rgb(${rValue}, ${gValue}, ${bValue})`;
-    return rgbString;
+    // let rgbString = `rgb(${rValue}, ${gValue}, ${bValue})`;
+    let rgbArray = [rValue, gValue, bValue];
+    return rgbArray;
 }
 
+// Return the updated gradient value.
+function setGradientvalue(currentGradient, gradient=false) {
+    if (gradient) {
+        if (currentGradient === 0) {
+            return 0.1;
+        } else {
+            return currentGradient + 0.1;
+        }
+    }
+    return 1.0;
+}
+
+// Return the current gradient value.
+function getCurrentGradient(styleString) {
+
+}
+
+// Construct style attribute string
+// Change this to "buildNew..."
 function getNewBackgroundStyleContent(rgbValue) {
     return `background-color: ${rgbValue}`;
 }
 
 function getStyleAttribute(object) {
+    // Format: "background-color: rgb(int1, int2, int3, float)"
     let styleAttribute = object.getAttribute('style');
-}
-
-function squareMatchesInfillChoice(object, button) {
-    // The button either forces RGB black, or not.
-    // The object either has RGB black, or not.
-    // N.B. Rainbow cannot produce RGB black values.
-
 }
 
 addEventListener('DOMContentLoaded', function () {
@@ -143,8 +181,8 @@ addEventListener('DOMContentLoaded', function () {
     const canvasTitle = document.querySelector('.canvas-block > .canvas-title');
     const canvasBlock = document.querySelector('.canvas');
 
+    // UI inputs for sketching.
     const rainbowButton = document.querySelector("#option2");
-
     const gradientButton = document.querySelector("#myCheckbox");
 
     const defaultCanvasTitle = "CANVAS ";
@@ -181,48 +219,49 @@ addEventListener('DOMContentLoaded', function () {
     });
 
     // Colour-change functionality.
+    /*
+    There are an array of conditions to check in order to paint to the viewport.
+    Some design decisions are made along the way.
+
+    ### Keyboard Inputs
+    1. Is the mouse down AND moving?
+
+    ### UI Inputs
+    2. What colour in-fill is selected?
+    3. What gradient style is selected?
+
+    ### Canvas Inputs
+    4. Does the square have an assigned colour?
+    5. Does the user-input colour in-fill match the square's colour?
+    6. Is the gradient less than 1?
+
+    These conditions, evaluated in this order, offer up certain rules for filling in colour.
+    As a result:
+
+    - Once a colour is assigned to a square, it's assigned for the "life" of the sketch.
+    - A gradient of 100% will fully colour in a square with the given colour.
+    - All colour will be applied through style tags.
+    - Any colour specifically available (e.g., black), will not be available in rainbow.
+    */
     canvasBlock.addEventListener('mousemove', function(e) {
-        // If keyboard inputs are suitable.
+        // Are the keyboard inputs sufficient?
         if (mouseDown) {
             
             // Get the target element
             let targetElement = e.target;
-
-            /*
-            There are an array of conditions to check in order to paint to the viewport.
-            Some design decisions are made along the way.
-
-            1) Does the square have an assigned colour?
-            2) Does the user colour match the current infill colour choice (i.e., black or not)?
-            3) What is the current gradient strength of the square?
-            4) What is the gradient boolean?
-
-            These conditions, evaluated in this order, offer up certain rules for filling in colour.
-            As a result:
-
-            - Once a colour is assigned to a square, it's assigned for the "life" of the design.
-            - A gradient of 100% will fully colour in a square with the given colour.
-            - All colour will be applied thorugh style tags.
-
-            */
 
             // What is the element's style attribute value?
             let styleAttribute = getStyleAttribute(targetElement);
 
             if(styleAttribute === "") {
                 // No colour has been set. Proceed with basic colour painting.
+                // Possible to compress all of that into a larger function?
             } else {
-                // Colour value already set in style tag.
-                // Compare rgb value to the user-infill style
+                // What are the RGB values? Do they match the UI choice?
                 
-                let matches = squareMatchesInfillChoice(targetElement, rainbowButton);
-
-
-
+                // What is the current gradient value? Is it less than 1?
+            
             }
-
-
-
 
             // Get the classes in the selected element
             let targetElementClasses = targetElement.classList;
@@ -235,15 +274,16 @@ addEventListener('DOMContentLoaded', function () {
 
                 // What colour scheme does the user want?
                 if (rainbowButton.checked) {
-                    let newRGB = generateRandomRGBValue();
-                    let newStyle = getNewBackgroundStyleContent(newRGB);
+                    let newRGBArray = generateRandomRGBValue();
+                    // let newStyle = getNewBackgroundStyleContent(newRGB);
 
                     // Add inline style to the selected element
-                    targetElement.setAttribute("style", newStyle);
+                    // targetElement.setAttribute("style", newStyle);
 
                     // Add basic class, to maintain flexbox rules
-                    targetElement.classList.add("canvas-element-blank");
+                    // targetElement.classList.add("canvas-element-blank");
                 } else {
+                    let newRGBArray = generateRandomRGBValue('black');
                     targetElement.classList.add("canvas-element-black");
                 }
             }
