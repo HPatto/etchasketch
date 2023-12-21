@@ -16,7 +16,6 @@ function buildCanvasRow(sideCount) {
     for (let i = 0; i < sideCount; i++) {
         const divElem = document.createElement('div');
         divElem.classList.add("canvas-element");
-        // console.log("Hey");
         divRow.appendChild(divElem);
     }
 
@@ -141,6 +140,19 @@ function getRandomInt(value1, value2) {
     return randomInt;
 }
 
+// Compare equality of arrays.
+function arraysAreEqual(arr1, arr2) {
+    // Check if arrays are of the same length
+    if (arr1.length !== arr2.length) {
+        return false;
+    }
+
+    // Check if all elements are equal in both arrays
+    return arr1.every((element, index) => {
+        return element === arr2[index];
+    });
+}
+
 // Return specific RGB values
 function getSpecificRGBValues(colourName, colourObject) {
     // Return RGB values for given string.
@@ -256,7 +268,7 @@ function setGradientValue(gradientOn=false, object=false) {
         // Option D.
         let currentGradient = getElementGradientValue(getStyleAttribute(object));
         if (currentGradient < (maxValue - incrementValue)) {
-            return currentGradient + incrementValue;
+            return (currentGradient + incrementValue);
         } else {
             return maxValue;
         }
@@ -290,7 +302,6 @@ function getElementGradientValue(styleString) {
 function getStyleAttribute(object) {
     // Format: "background-color: rgb(int1, int2, int3, float)"
     let styleAttribute = object.getAttribute('style');
-    // console.log(styleAttribute);
     return styleAttribute;
 }
 
@@ -326,29 +337,34 @@ function setUpdatedStyleAttribute(object, styleString) {
 }
 
 function infillMatchesHistory(sessionColours, isRainbowInfill, currentRGBValues) {
-    if (isRainbowInfill) {
-        return (currentRGBValues != sessionColours.getRGBValues('black'));
+    // This is currently hard-coded. A point to note in future improvements.
+    let isBlackElement = arraysAreEqual(sessionColours.getRGBValues('black'), currentRGBValues);
+    
+    if (isRainbowInfill && !(isBlackElement)) {
+        return true;
+    } else if (!(isRainbowInfill) && isBlackElement) {
+        return true;
     } else {
-        return (currentRGBValues == sessionColours.getRGBValues('black'));
-    } 
+        return false;
+    }
 }
 
 /*##### TOP-LEVEL FUNCTIONS #####*/
 
 // Build a fresh element
-function constructFreshElement(object, rgbArray, isGradientSelected) {
+function constructFreshElement(element, rgbArray, isGradientSelected) {
     let newGradient = setGradientValue(gradientOn=isGradientSelected);
     let newStyle = buildStyleAttributeString(rgbArray, newGradient);
-    setUpdatedStyleAttribute(object, newStyle);
-    setUpdatedClassValue(object);
+    setUpdatedStyleAttribute(element, newStyle);
+    setUpdatedClassValue(element);
 }
 
 // Update an existing element
-function updateExistingElement(object, rgbArray, isGradientSelected) {
-    let newGradient = setGradientValue(gradientOn=isGradientSelected, object);
+function updateExistingElement(element, rgbArray, isGradientSelected) {
+    let newGradient = setGradientValue(gradientOn=isGradientSelected, object=element);
     let newStyle = buildStyleAttributeString(rgbArray, newGradient);
-    setUpdatedStyleAttribute(object, newStyle);
-    setUpdatedClassValue(object);
+    setUpdatedStyleAttribute(element, newStyle);
+    setUpdatedClassValue(element);
 }
 
 addEventListener('DOMContentLoaded', function () {
