@@ -325,11 +325,27 @@ function setUpdatedStyleAttribute(object, styleString) {
     object.setAttribute('style', styleString);
 }
 
-/*##### TOP-LEVEL FUNCTIONS ###*/
+function infillMatchesHistory(sessionColours, isRainbowInfill, currentRGBValues) {
+    if (isRainbowInfill) {
+        return (currentRGBValues != sessionColours.getRGBValues('black'));
+    } else {
+        return (currentRGBValues == sessionColours.getRGBValues('black'));
+    } 
+}
+
+/*##### TOP-LEVEL FUNCTIONS #####*/
 
 // Build a fresh element
 function constructFreshElement(object, rgbArray, isGradientSelected) {
     let newGradient = setGradientValue(gradientOn=isGradientSelected);
+    let newStyle = buildStyleAttributeString(rgbArray, newGradient);
+    setUpdatedStyleAttribute(object, newStyle);
+    setUpdatedClassValue(object);
+}
+
+// Update an existing element
+function updateExistingElement(object, rgbArray, isGradientSelected) {
+    let newGradient = setGradientValue(gradientOn=isGradientSelected, object);
     let newStyle = buildStyleAttributeString(rgbArray, newGradient);
     setUpdatedStyleAttribute(object, newStyle);
     setUpdatedClassValue(object);
@@ -433,41 +449,11 @@ addEventListener('DOMContentLoaded', function () {
                     let newRGBArray = generateRandomRGBValue(sessionColours);
                     constructFreshElement(targetElement, newRGBArray, isGradientSelected);
                 }
-                // The following block is for a black infill, 0 gradient. SUCCESS*
-                // let newRGBArray = generateRandomRGBValue(sessionColours, 'black');
-                //constructFreshElement(object, rgbArray, isGradientSelected)
-                //
-                // let newGradient = setGradientValue(gradientOn=isGradientSelected);
-                // let newStyle = buildStyleAttributeString(newRGBArray, newGradient);
-                // setUpdatedStyleAttribute(targetElement, newStyle);
-                // setUpdatedClassValue(targetElement);
-
-                // The following block is for a rainbow infill, 0 gradient. SUCCESS with caveat.
-                // let newRGBArray = generateRandomRGBValue(sessionColours);
-                // let newGradient = setGradientValue(gradientOn=isGradientSelected);
-                // let newStyle = buildStyleAttributeString(newRGBArray, newGradient);
-                // setUpdatedStyleAttribute(targetElement, newStyle);
-                // setUpdatedClassValue(targetElement);
-
-                // The following block is for a black infill, gradient ON. SUCCESS*
-                // let newRGBArray = generateRandomRGBValue(sessionColours, 'black');
-                // let newGradient = setGradientValue(gradientOn=true);
-                // let newStyle = buildStyleAttributeString(newRGBArray, newGradient);
-                // setUpdatedStyleAttribute(targetElement, newStyle);
-                // setUpdatedClassValue(targetElement);
-
-                // The following block is for a rainbow infill, gradient ON. SUCCESS with caveat.
-                // let newRGBArray = generateRandomRGBValue(sessionColours);
-                // let newGradient = setGradientValue(gradientOn=isGradientSelected);
-                // let newStyle = buildStyleAttributeString(newRGBArray, newGradient);
-                // setUpdatedStyleAttribute(targetElement, newStyle);
-                // setUpdatedClassValue(targetElement);
             } else {
                 let newRGBArray = getElementRGBValues(styleAttribute);
-                let newGradient = setGradientValue(gradientOn=isGradientSelected, targetElement);
-                let newStyle = buildStyleAttributeString(newRGBArray, newGradient);
-                setUpdatedStyleAttribute(targetElement, newStyle);
-                setUpdatedClassValue(targetElement);
+                if (infillMatchesHistory(sessionColours, isRainbowInfill, newRGBArray)) {
+                    updateExistingElement(targetElement, newRGBArray, isGradientSelected);
+                } 
             }
         }
     });
