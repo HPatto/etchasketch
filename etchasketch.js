@@ -199,6 +199,28 @@ function generateRandomRGBValue(sessionColours, colour=false) {
     return rgbArray;
 }
 
+function getElementRGBValues(styleString) {
+    // A function to return the array of ints defining an objects RGB.
+    // Format: "background-color: rgb(int1, int2, int3, float)"
+
+    // Strings used to divide the style.
+    let firstDelimiter = "(";
+    let secondDelimiter = ", ";
+    
+    // Format: "int1, int2, int3, float)"
+    let firstSplitString = styleString.split(firstDelimiter);
+
+    // Format: ["int1", "int2", "int3"]
+    let secondSplitString = firstSplitString[1].split(secondDelimiter);
+
+    let rValue = parseInt(secondSplitString[0]);
+    let gValue = parseInt(secondSplitString[1]);
+    let bValue = parseInt(secondSplitString[2]);
+
+    let elementRGBValues = [rValue, gValue, bValue];
+    return elementRGBValues;
+}
+
 /*##### GRADIENT FUNCTIONS #####*/
 
 // Set the gradient value, and return it.
@@ -232,7 +254,7 @@ function setGradientValue(gradientOn=false, object=false) {
 
     if (gradientOn && (object !== false)) {
         // Option D.
-        let currentGradient = getGradientValue(object)
+        let currentGradient = getElementGradientValue(getStyleAttribute(object));
         if (currentGradient < (maxValue - incrementValue)) {
             return currentGradient + incrementValue;
         } else {
@@ -268,6 +290,7 @@ function getElementGradientValue(styleString) {
 function getStyleAttribute(object) {
     // Format: "background-color: rgb(int1, int2, int3, float)"
     let styleAttribute = object.getAttribute('style');
+    // console.log(styleAttribute);
     return styleAttribute;
 }
 
@@ -300,6 +323,16 @@ function setUpdatedClassValue(object) {
 // A function to apply the updated styling rules to a given element.
 function setUpdatedStyleAttribute(object, styleString) {
     object.setAttribute('style', styleString);
+}
+
+/*##### TOP-LEVEL FUNCTIONS ###*/
+
+// Build a fresh element
+function constructFreshElement(object, rgbArray, isGradientSelected) {
+    let newGradient = setGradientValue(gradientOn=isGradientSelected);
+    let newStyle = buildStyleAttributeString(rgbArray, newGradient);
+    setUpdatedStyleAttribute(object, newStyle);
+    setUpdatedClassValue(object);
 }
 
 addEventListener('DOMContentLoaded', function () {
@@ -387,20 +420,55 @@ addEventListener('DOMContentLoaded', function () {
             // What is the element's style attribute value?
             let styleAttribute = getStyleAttribute(targetElement);
 
-            // The following block is for a black infill, 0 gradient. SUCCESS*
-            // let newRGBArray = generateRandomRGBValue(sessionColours, 'black');
-            // let newGradient = setGradientValue();
-            // let newStyle = buildStyleAttributeString(newRGBArray, newGradient);
-            // setUpdatedStyleAttribute(targetElement, newStyle);
-            // setUpdatedClassValue(targetElement);
+            // Is the desired colour rainbow?
+            let isRainbowInfill = (rainbowButton.checked === true);
+            let isGradientSelected = (gradientButton.checked == true);
+            let freshElement = (styleAttribute === null);
 
-            // The following block is for a rainbow infill, 0 gradient. SUCCESS with caveat.
-            let newRGBArray = generateRandomRGBValue(sessionColours);
-            let newGradient = setGradientValue();
-            let newStyle = buildStyleAttributeString(newRGBArray, newGradient);
-            setUpdatedStyleAttribute(targetElement, newStyle);
-            setUpdatedClassValue(targetElement);
+            if (freshElement) {
+                if (!(isRainbowInfill)) {
+                    let newRGBArray = generateRandomRGBValue(sessionColours, 'black');
+                    constructFreshElement(targetElement, newRGBArray, isGradientSelected);
+                } else {
+                    let newRGBArray = generateRandomRGBValue(sessionColours);
+                    constructFreshElement(targetElement, newRGBArray, isGradientSelected);
+                }
+                // The following block is for a black infill, 0 gradient. SUCCESS*
+                // let newRGBArray = generateRandomRGBValue(sessionColours, 'black');
+                //constructFreshElement(object, rgbArray, isGradientSelected)
+                //
+                // let newGradient = setGradientValue(gradientOn=isGradientSelected);
+                // let newStyle = buildStyleAttributeString(newRGBArray, newGradient);
+                // setUpdatedStyleAttribute(targetElement, newStyle);
+                // setUpdatedClassValue(targetElement);
 
+                // The following block is for a rainbow infill, 0 gradient. SUCCESS with caveat.
+                // let newRGBArray = generateRandomRGBValue(sessionColours);
+                // let newGradient = setGradientValue(gradientOn=isGradientSelected);
+                // let newStyle = buildStyleAttributeString(newRGBArray, newGradient);
+                // setUpdatedStyleAttribute(targetElement, newStyle);
+                // setUpdatedClassValue(targetElement);
+
+                // The following block is for a black infill, gradient ON. SUCCESS*
+                // let newRGBArray = generateRandomRGBValue(sessionColours, 'black');
+                // let newGradient = setGradientValue(gradientOn=true);
+                // let newStyle = buildStyleAttributeString(newRGBArray, newGradient);
+                // setUpdatedStyleAttribute(targetElement, newStyle);
+                // setUpdatedClassValue(targetElement);
+
+                // The following block is for a rainbow infill, gradient ON. SUCCESS with caveat.
+                // let newRGBArray = generateRandomRGBValue(sessionColours);
+                // let newGradient = setGradientValue(gradientOn=isGradientSelected);
+                // let newStyle = buildStyleAttributeString(newRGBArray, newGradient);
+                // setUpdatedStyleAttribute(targetElement, newStyle);
+                // setUpdatedClassValue(targetElement);
+            } else {
+                let newRGBArray = getElementRGBValues(styleAttribute);
+                let newGradient = setGradientValue(gradientOn=isGradientSelected, targetElement);
+                let newStyle = buildStyleAttributeString(newRGBArray, newGradient);
+                setUpdatedStyleAttribute(targetElement, newStyle);
+                setUpdatedClassValue(targetElement);
+            }
         }
     });
 });
