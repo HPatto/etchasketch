@@ -62,6 +62,53 @@ function updateCanvasTitle(object, defaultString, edgeSize) {
 
 /*##### RGB FUNCTIONS ##### */
 
+// A prototype object to hold all the specific colours permitted.
+function specificRGBDefinitions() {
+    let colours = new Map();
+    let values = new Set();
+
+    function setRGBValues(array) {
+        // Array format is [string, int, int, int]
+        let arrayColour = array[0];
+        let arrayValues = array.slice(1);
+
+        colours.set(arrayColour, arrayValues);
+        values.add(arrayValues);
+    }
+
+    function hasRGBArray(array) {
+        return values.has(array);
+    }
+
+    function getRGBValues(colour) {
+        // JS would return undefined as a default. We can handle the error at the call.
+        return colours.get(colour);
+    }
+
+    function getAllColourNames() {
+        return Array.from(colours.keys());
+    }
+
+    return {
+        setRGBValues,
+        getRGBValues,
+        getAllColourNames,
+        hasRGBArray
+    };
+}
+
+// Initialize the specific RGB definitions for use.
+function initializeRGBDefintions(sessionColours) {
+    let definitions = [
+        ["black", 0, 0, 0]
+        // Add more colours here, if desired.
+    ]
+
+    definitions.forEach((element) => {
+        sessionColours.setRGBValues(element);
+    })    
+}
+
 // Generate a random int in a given range.
 function getRandomInt(value1, value2) {
     /*
@@ -95,81 +142,164 @@ function getRandomInt(value1, value2) {
 }
 
 // Return specific RGB values
-function getSpecificRGBValues(colour) {
-    // Not sure about best practice. Colour strings are mapped to RGB arrays.
-
-    // black RGB values.
-    if (colour === 'black') {
-        return [255, 255, 255];
-    }
-
-    return false;
+function getSpecificRGBValues(colourName, colourObject) {
+    // Return RGB values for given string.
+    // If not in the session object, return undefined.
+    let rgbValues = colourObject.getRGBValues(colourName);
+    return rgbValues;
 }
 
 // Return an array of RGB values.
-function generateRandomRGBValue(colour=false) {
-    // Format: "rgb(rValue, gValue, Bvalue)"
+function generateRandomRGBValue(sessionColours, colour=false) {
+    /*
+    Return an array of RGB values.
+    If a colour is provided, return those RGB values.
+
+    If a colour is not provided, generate random values.
+    The random values must not match any array of RGB values in the session colours.
+    Basic check can be a loop, although that is slow. Small # of colours, okay for now.
+    */
 
     // If specific colour is passed in, get the RGB values and return them.
-    if (colour) {
-        let values = specificRGBValues(colour);
-        if (!values) {
-            return values;
-        }
+    if ((colour !== false)) {
+        // N.B. No error-checking for an undefined condition!.
+        return getSpecificRGBValues(colour, sessionColours);
     }
     
-    // Ensure full black values are not permitted. Should be generalized.
     // Define each RGB value.
     let rValue;
     let gValue;
     let bValue;
 
-    let maxValue = 255; // RGb value representing "maximum" colour.
+    // RGB value representing "maximum" colour.
+    let maxValue = 255;
+
+    // Get all RGB arrays defined in the session.
+    // let allRGBValues = sessionColours.getAllRGBArrays();
+
+    // Array to hold the random values.
+    let rgbArray = [];
 
     while (true) {
+        // Get new values
         rValue = getRandomInt(0, maxValue);
         gValue = getRandomInt(0, maxValue);
         bValue = getRandomInt(0, maxValue);
 
-        // Check the found value is not RGB black.
-        if (!(rValue === maxValue &&
-            gValue === maxValue &&
-            bValue === maxValue)) {
-                break;
-            }
-    }
+        // Add to the array
+        rgbArray.push(rValue);
+        rgbArray.push(gValue);
+        rgbArray.push(bValue);
 
-    // let rgbString = `rgb(${rValue}, ${gValue}, ${bValue})`;
-    let rgbArray = [rValue, gValue, bValue];
+        // Check the found value is specifically defined.
+        if (!(sessionColours.hasRGBArray(rgbArray))) {
+            break;
+        }
+    }
     return rgbArray;
 }
 
-// Return the updated gradient value.
-function setGradientvalue(currentGradient, gradient=false) {
-    if (gradient) {
-        if (currentGradient === 0) {
-            return 0.1;
+/*##### GRADIENT FUNCTIONS #####*/
+
+// Set the gradient value, and return it.
+function setGradientValue(gradientOn=false, object=false) {
+    /*
+    The gradient value depends on a number of factors.
+    1. Is the gradient style choice selected?
+    Pass in an optional argument, default false.
+
+    2. Is this a new gradient object, or an update?
+    Pass in an optional object, default false.
+    ----------
+    A: Gradient is off, there is no object
+    => New object, return 1.0
+
+    B: Gradient is off, there is an object
+    => Object exists, return 1.0 (check for 1.0 ignored so far).
+
+    C: Gradient is on, there is no object
+    => New object, return 0.1
+
+    D: Gradient is on, there is an object
+    => Access current gradient, increment by 0.1 (iff. poss.), return it.
+    ----------
+    Sufficient check would be to see if a gradient value was !> 0.9.
+    */
+
+    let initialValue = 0.1;
+    let incrementValue = 0.1;
+    let maxValue = 1.0;
+
+    if (gradientOn && (object !== false)) {
+        // Option D.
+        let currentGradient = getGradientValue(object)
+        if (currentGradient < (maxValue - incrementValue)) {
+            return currentGradient + incrementValue;
         } else {
-            return currentGradient + 0.1;
+            return maxValue;
         }
+    } else if (gradientOn && !(object)) {
+        // Option C.
+        return initialValue;
+    } else if (!(gradientOn) && (object !== false)) {
+        // Option B.
+        return maxValue;
+    } else {
+        // Option A.
+        return maxValue;
     }
-    return 1.0;
 }
 
-// Return the current gradient value.
-function getCurrentGradient(styleString) {
+function getElementGradientValue(styleString) {
+    // A function to return the float value of an object's gradient.
 
+    // String used to divide the style.
+    let delimiter = ", ";
+    
+    // Format: "grad)"
+    let splitString = styleString.split(delimiter);
+    let gradString = splitString[splitString.length - 1].slice(0, -1);
+
+    return parseFloat(gradString);
 }
 
-// Construct style attribute string
-// Change this to "buildNew..."
-function getNewBackgroundStyleContent(rgbValue) {
-    return `background-color: ${rgbValue}`;
-}
+/*##### CLASS / ATTRIBUTE FUNCTIONS #####*/
 
 function getStyleAttribute(object) {
     // Format: "background-color: rgb(int1, int2, int3, float)"
     let styleAttribute = object.getAttribute('style');
+    return styleAttribute;
+}
+
+// A function to combine RGB and gradient values.
+function buildStyleAttributeString(rgbArray, gradient) {
+    let rValue = rgbArray[0];
+    let gValue = rgbArray[1];
+    let bValue = rgbArray[2];
+
+    let attributeString = `background-color: rgb(
+        ${rValue}, ${gValue}, ${bValue}, ${gradient})`;
+
+    return attributeString;
+}
+
+// A function to update the CSS value applied to the element.
+function setUpdatedClassValue(object) {
+
+    let objectClasses = object.classList;
+
+    // Has the element been updated previously?
+    if (objectClasses.contains("canvas-element")) {
+        // Clear out existing classes
+        object.className = '';
+        // Add basic class, to maintain flexbox rules
+        object.classList.add("canvas-element-blank");
+    }
+}
+
+// A function to apply the updated styling rules to a given element.
+function setUpdatedStyleAttribute(object, styleString) {
+    object.setAttribute('style', styleString);
 }
 
 addEventListener('DOMContentLoaded', function () {
@@ -185,15 +315,19 @@ addEventListener('DOMContentLoaded', function () {
     const rainbowButton = document.querySelector("#option2");
     const gradientButton = document.querySelector("#myCheckbox");
 
+    // Build the initial canvas.
     const defaultCanvasTitle = "CANVAS ";
     const defaultSize = 16;
 
-    let mouseDown = false;
-
-    // Build the initial canvas. Can't attach an event listener to this,
-    // because it is always re-built? Check that.
     insertCanvasGrid(buildCanvasGrid(defaultSize));
     updateCanvasTitle(canvasTitle, defaultCanvasTitle, defaultSize);
+
+    // Initial mouse status set.
+    let mouseDown = false;
+
+    // Build and initialize the colour definition for the session.
+    let sessionColours = specificRGBDefinitions();
+    initializeRGBDefintions(sessionColours);
 
     // Re-size functionality added to the webpage.
     updateButton.addEventListener('click', function() {
@@ -253,42 +387,20 @@ addEventListener('DOMContentLoaded', function () {
             // What is the element's style attribute value?
             let styleAttribute = getStyleAttribute(targetElement);
 
-            if(styleAttribute === "") {
-                // No colour has been set. Proceed with basic colour painting.
-                // Possible to compress all of that into a larger function?
-            } else {
-                // What are the RGB values? Do they match the UI choice?
-                
-                // What is the current gradient value? Is it less than 1?
-            
-            }
+            // The following block is for a black infill, 0 gradient. SUCCESS*
+            // let newRGBArray = generateRandomRGBValue(sessionColours, 'black');
+            // let newGradient = setGradientValue();
+            // let newStyle = buildStyleAttributeString(newRGBArray, newGradient);
+            // setUpdatedStyleAttribute(targetElement, newStyle);
+            // setUpdatedClassValue(targetElement);
 
-            // Get the classes in the selected element
-            let targetElementClasses = targetElement.classList;
+            // The following block is for a rainbow infill, 0 gradient. SUCCESS with caveat.
+            let newRGBArray = generateRandomRGBValue(sessionColours);
+            let newGradient = setGradientValue();
+            let newStyle = buildStyleAttributeString(newRGBArray, newGradient);
+            setUpdatedStyleAttribute(targetElement, newStyle);
+            setUpdatedClassValue(targetElement);
 
-            // Is the element a square to be coloured?
-            // Once it has been coloured, it cannot be updated again.
-            if (targetElementClasses.contains("canvas-element")) {
-                // Clear out existing classes
-                targetElement.className = '';
-
-                // What colour scheme does the user want?
-                if (rainbowButton.checked) {
-                    let newRGBArray = generateRandomRGBValue();
-                    // let newStyle = getNewBackgroundStyleContent(newRGB);
-
-                    // Add inline style to the selected element
-                    // targetElement.setAttribute("style", newStyle);
-
-                    // Add basic class, to maintain flexbox rules
-                    // targetElement.classList.add("canvas-element-blank");
-                } else {
-                    let newRGBArray = generateRandomRGBValue('black');
-                    targetElement.classList.add("canvas-element-black");
-                }
-            }
         }
     });
-
-
 });
