@@ -137,7 +137,7 @@ To get a local copy up and running follow these simple example steps. -->
 
 ## Usage
 
-Click <a href="https://hpatto.github.io/etchasketch/" here>!
+Click <a href="https://hpatto.github.io/etchasketch/">here</a>!
 The widget can also be accessed through the link in the About section.
 
 <!-- _For more examples, please refer to the [Documentation](https://example.com)_ -->
