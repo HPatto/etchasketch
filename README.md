@@ -81,6 +81,10 @@ Etch-a-sketch widget offering simple greyscale and colour functionality.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+### Goals
+
+* Design and implementation of modular, client-side JavaScript
+* Control and handling of user input
 
 
 ### Built With
@@ -134,7 +138,6 @@ To get a local copy up and running follow these simple example steps. -->
 <!-- <p align="right">(<a href="#readme-top">back to top</a>)</p> -->
 
 <!-- USAGE EXAMPLES -->
-
 ## Usage
 
 Click <a href="https://hpatto.github.io/etchasketch/">here</a>!
